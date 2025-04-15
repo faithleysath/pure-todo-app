@@ -1,0 +1,15 @@
+:root {
+    color-scheme: light dark;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+li {
+    list-style: none;
+}
+
+body {
+    background: linear-gradient(to right, rgb(113, 65, 168), rgba(44, 114, 251, 1));
+}
