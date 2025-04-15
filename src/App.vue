@@ -1,14 +1,38 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 
 const newTodo = ref('');
 
-let max_id = 2;
+// 初始化 max_id
+let max_id = 0;
 
-const items = reactive([
-    { id: 1, text: 'Learn Vue.js', completed: false },
-    { id: 2, text: 'Build a Todo App', completed: false },
-]);
+// 初始化为空数组，后续会从 localStorage 加载
+const items = reactive([]);
+
+// 从 localStorage 加载数据
+function loadTodos() {
+    const savedTodos = localStorage.getItem('todos');
+    const savedMaxId = localStorage.getItem('max_id');
+    
+    if (savedTodos) {
+        try {
+            const parsedTodos = JSON.parse(savedTodos);
+            items.splice(0, items.length, ...parsedTodos);
+        } catch (error) {
+            console.error('Failed to parse todos from localStorage:', error);
+        }
+    }
+    
+    if (savedMaxId) {
+        max_id = parseInt(savedMaxId);
+    }
+}
+
+// 保存数据到 localStorage
+function saveTodos() {
+    localStorage.setItem('todos', JSON.stringify(items));
+    localStorage.setItem('max_id', max_id.toString());
+}
 
 function addTodo() {
     console.log('Adding todo:', newTodo.value);
@@ -31,6 +55,15 @@ function removeTodo(id) {
     }
 }
 
+// 监听 items 的变化，保存到 localStorage
+watch(items, () => {
+    saveTodos();
+}, { deep: true });
+
+// 组件挂载时加载数据
+onMounted(() => {
+    loadTodos();
+});
 </script>
 
 <template>
